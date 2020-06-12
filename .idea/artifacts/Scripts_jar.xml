@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Scripts_jar">
+    <output-path>$USER_HOME$/OSBot/Scripts</output-path>
+    <root id="archive" name="Scripts_jar.jar">
+      <element id="module-output" name="NewmanTestscript" />
+    </root>
+  </artifact>
+</component>
