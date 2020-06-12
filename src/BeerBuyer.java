@@ -13,11 +13,13 @@ import org.osbot.rs07.utility.ConditionalSleep;
 
 import java.awt.*;
 import java.util.Random;
-@ScriptManifest(author = "Newman", name = "Woody", info = "Attempt 1", version = 0.1, logo = "")
+@ScriptManifest(author = "Newman", name = "Beer", info = "Attempt 1", version = 0.1, logo = "")
 public final class BeerBuyer extends Script  {
 
     private long startTime;
+    private String state = "Initializing";
     private Font font = new Font("Arial", Font.BOLD, 14);
+    private Area faladorPub = new Area(2954, 3366, 2960, 3374);
 
     @Override
     public void onStart() {
@@ -39,13 +41,16 @@ public final class BeerBuyer extends Script  {
 
     @Override
     public int onLoop() throws InterruptedException {
-        if (!Banks.FALADOR_WEST.contains(myPlayer())) {
+        if (!Banks.FALADOR_WEST.contains(myPlayer()) && getInventory().getAmount(995) == 0) {
+            state = "Walking to bank...";
             getWalking().webWalk(Banks.FALADOR_WEST);
-        } else {
+        } else if (Banks.FALADOR_WEST.contains(myPlayer())){
+            state = "Banking...";
             if (!getBank().isOpen()) {
                 getBank().open();
             } else {
                 if (bank.depositAll()) {
+
                     Sleep.sleepUntil(() -> getInventory().isEmpty(), 5000);
                 }
                 if (bank.getAmount(995) >= 28) {
@@ -56,7 +61,18 @@ public final class BeerBuyer extends Script  {
                     Sleep.sleepUntil(() -> !getBank().isOpen(), 5000);
                 }
             }
+        } else if (getInventory().contains(995)){
+            if (faladorPub.contains(myPlayer())) {
+                state = "Buying beer";
+
+            } else {
+                state = "Walking to Pub..";
+                getWalking().webWalk(faladorPub);
+            }
+
         }
+
+        /* 2954 3366 - 2960 3374*/
 
         return random (200,300);
     }
@@ -67,6 +83,7 @@ public final class BeerBuyer extends Script  {
         long runTime = System.currentTimeMillis() - startTime;
         g.setColor(Color.white);
         g.setFont(font);
+        g.drawString("State: " + state, 10, 210);
         g.drawLine(mP.x, 501, mP.x, 0);
         g.drawLine(0, mP.y, 764, mP.y);
         g.drawString("Time Ran: "+ formatTime(runTime), 10, 310);
