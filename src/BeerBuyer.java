@@ -21,6 +21,8 @@ public final class BeerBuyer extends Script  {
     private String state = "Initializing";
     private Font font = new Font("Arial", Font.BOLD, 14);
     private Area faladorPub = new Area(2954, 3366, 2960, 3374);
+    private final String itemName = "Wizard mind bomb";
+    private final int itemPrice = 200;
 
     @Override
     public void onStart() {
@@ -42,6 +44,7 @@ public final class BeerBuyer extends Script  {
 
     @Override
     public int onLoop() throws InterruptedException {
+        GrandExchange GE = new GrandExchange(this);
         //If we aren't in the bank area then walk there
         if (!Banks.FALADOR_WEST.contains(myPlayer()) && getInventory().getAmount(995) == 0) {
             state = "Walking to bank...";
@@ -73,7 +76,7 @@ public final class BeerBuyer extends Script  {
         if (!faladorPub.contains(myPlayer()) && getInventory().contains(995)) {
             state = "Walking to Pub..";
             getWalking().webWalk(faladorPub);
-            //If we ar ein the pub buy beers
+            //If we are in the pub buy beers
         } else if (faladorPub.contains(myPlayer())) {
                 state = "Buying beer";
                 NPC Emily = getNpcs().closest("Emily");
@@ -105,9 +108,36 @@ public final class BeerBuyer extends Script  {
             }
 
         // sends player to GE to begin selling the beer
-        if (!Banks.GRAND_EXCHANGE.contains(myPlayer()) && getInventory().isEmpty()) {
+        if (!Banks.GRAND_EXCHANGE.contains(myPlayer())) {
             state = "Walking to GE...";
             getWalking().webWalk(Banks.GRAND_EXCHANGE);
+        } else if (Banks.GRAND_EXCHANGE.contains(myPlayer())) {
+            state = "Banking...";
+            if (!getBank().isOpen()) {
+                getBank().open();
+            } else {
+                //If our inventory isn't empty, deposit everything
+                if (!getInventory().isEmpty()) {
+                    if (bank.depositAll()) {
+                        Sleep.sleepUntil(() -> getInventory().isEmpty(), 5000);
+                    }
+                }
+                //If we have enough coins for a full inventory of beer take out that amount of coins
+                if (bank.enableMode(Bank.BankMode.WITHDRAW_NOTE)) {
+                    state = "Switching to noted mode";
+                    bank.withdrawAll("Wizard mind bomb");
+                }
+                //close the bank
+                if (bank.close()) {
+                    Sleep.sleepUntil(() -> !getBank().isOpen(), 5000);
+                }
+            }
+
+        } else if (!getGrandExchange().isOpen()) { //Checks if ge is open
+            GE.openGE(); //open ge randomly using booth or npc
+        } else {
+            GE.collectItems(false); //collect items (boolean true -> to bank, false -> inventory)
+            GE.createSellOffer(itemName, itemPrice, 0); //Sells all of the specified items in inventory at specified price ( 0 = all, int = specified amount)
         }
 
         return random (200,300);
