@@ -42,29 +42,39 @@ public final class BeerBuyer extends Script  {
 
     @Override
     public int onLoop() throws InterruptedException {
+        //If we aren't in the bank area then walk there
         if (!Banks.FALADOR_WEST.contains(myPlayer()) && getInventory().getAmount(995) == 0) {
             state = "Walking to bank...";
             getWalking().webWalk(Banks.FALADOR_WEST);
+            //If we are in the bank and have no coins open the banks
         } else if (Banks.FALADOR_WEST.contains(myPlayer()) && getInventory().getAmount(995) == 0) {
             state = "Banking...";
             if (!getBank().isOpen()) {
                 getBank().open();
             } else {
+                //If our inventory isn't empty, deposit everything
                 if (!getInventory().isEmpty()) {
                     if (bank.depositAll()) {
                         Sleep.sleepUntil(() -> getInventory().isEmpty(), 5000);
                     }
                 }
+                //If we have enough coins for a full inventory of beer take out that amount of coins
                 if (bank.getAmount(995) >= 84) {
                     withdrawItem(995, 84);
                 }
-
+                //close the bank
                 if (bank.close()) {
                     Sleep.sleepUntil(() -> !getBank().isOpen(), 5000);
                 }
             }
-        } else if (getInventory().contains(995)){
-            if (faladorPub.contains(myPlayer())) {
+
+        }
+        //If the player has coins and is not in the pub, walk to the pub
+        if (!faladorPub.contains(myPlayer()) && getInventory().contains(995)) {
+            state = "Walking to Pub..";
+            getWalking().webWalk(faladorPub);
+            //If we ar ein the pub buy beers
+        } else if (faladorPub.contains(myPlayer())) {
                 state = "Buying beer";
                 NPC Emily = getNpcs().closest("Emily");
 
@@ -85,34 +95,20 @@ public final class BeerBuyer extends Script  {
                 } else {
                     if (dialogues.isPendingOption()) {
                         dialogues.completeDialogue("I'll try the Mind Bomb");
-                        sleep(random(400, 900));
+                        sleep(random(700, 900));
                     }
                     if (dialogues.isPendingContinuation()) {
                         dialogues.clickContinue();
-                        sleep(random(400, 900));
+                        sleep(random(700, 900));
                     }
                 }
-
-//                if (Emily.exists()) {
-//                    if (Emily.isVisible() && !dialogues.inDialogue()) {
-//                        Emily.interact("Talk-to");
-//                        return  dialogues.inDialogue();
-//                    } else if (dialogues.isPendingContinuation()) {
-//                            dialogues.clickContinue();
-//                        } else if (getDialogues().isPendingOption()) {
-//                             getDialogues().selectOption("I'll try the Mind Bomb");
-//                         }
-//                }
-
-
-            } else {
-                state = "Walking to Pub..";
-                getWalking().webWalk(faladorPub);
             }
 
+        // sends player to GE to begin selling the beer
+        if (!Banks.GRAND_EXCHANGE.contains(myPlayer()) && getInventory().isEmpty()) {
+            state = "Walking to GE...";
+            getWalking().webWalk(Banks.GRAND_EXCHANGE);
         }
-
-        /* 2954 3366 - 2960 3374*/
 
         return random (200,300);
     }
@@ -130,3 +126,15 @@ public final class BeerBuyer extends Script  {
     }
 
 }
+
+
+//                if (Emily.exists()) {
+//                    if (Emily.isVisible() && !dialogues.inDialogue()) {
+//                        Emily.interact("Talk-to");
+//                        return  dialogues.inDialogue();
+//                    } else if (dialogues.isPendingContinuation()) {
+//                            dialogues.clickContinue();
+//                        } else if (getDialogues().isPendingOption()) {
+//                             getDialogues().selectOption("I'll try the Mind Bomb");
+//                         }
+//                }
