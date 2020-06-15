@@ -1,18 +1,14 @@
-import org.osbot.rs07.api.Bank;
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.constants.Banks;
-import org.osbot.rs07.api.model.NPC;
-import org.osbot.rs07.api.model.Player;
 import org.osbot.rs07.api.model.RS2Object;
-import org.osbot.rs07.api.ui.EquipmentSlot;
 import org.osbot.rs07.api.ui.Skill;
-import org.osbot.rs07.event.WebWalkEvent;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import org.osbot.rs07.utility.ConditionalSleep;
+import utils.Sleep;
 
 import java.awt.*;
-import java.util.Random;
+
 @ScriptManifest(author = "Newman", name = "Woody", info = "Attempt 1", version = 0.1, logo = "")
 public final class Woodcutter extends Script  {
 

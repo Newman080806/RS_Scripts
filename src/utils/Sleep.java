@@ -1,3 +1,5 @@
+package utils;
+
 import org.osbot.rs07.utility.ConditionalSleep;
 
 import java.util.function.BooleanSupplier;
@@ -11,6 +13,11 @@ public class Sleep extends ConditionalSleep {
         this.condition = condition;
     }
 
+    public Sleep(final BooleanSupplier condition, final int timeout, final int interval) {
+        super(timeout, interval);
+        this.condition = condition;
+    }
+
     @Override
     public final boolean condition() throws InterruptedException {
         return condition.getAsBoolean();
@@ -18,5 +25,9 @@ public class Sleep extends ConditionalSleep {
 
     public static boolean sleepUntil(final BooleanSupplier condition, final int timeout) {
         return new Sleep(condition, timeout).sleep();
+    }
+
+    public static boolean until(final BooleanSupplier condition, final int timeout, final int interval) {
+        return new Sleep(condition, timeout, interval).sleep();
     }
 }
