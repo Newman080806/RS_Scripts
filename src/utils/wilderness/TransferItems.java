@@ -13,23 +13,28 @@ public class TransferItems extends Event {
 
     private Area tradeArea = new Area(3135, 3516, 3137, 3519);
     private Area wildernessArea = new Area(3134, 3537, 3136, 3539);
-    private String targetPlayer;
+    private String muleAccount;
 //    private Player targetPlayer = players.closest((Filter<Player>) player -> !player.getName().equals(myPlayer().getName())); //can change this to a friends name also
 
+
+    public TransferItems(String targetPlayer) {
+        this.muleAccount = targetPlayer.replace(' ', '\u00A0');
+    }
+
     protected String getTargetPlayer() {
-        return targetPlayer;
+        return muleAccount;
     }
 
     @Override
     public int execute() throws InterruptedException {
-        Player targetPlayer = players.closest(getTargetPlayer());
+        Player muleAccount = getPlayers().closest(o -> o.getName().replaceAll("\\u00a0", " ").equalsIgnoreCase("ADDACCOUNT"));
 
-        if (tradeArea.contains(myPlayer()) && !(targetPlayer == null)) {
+        if (tradeArea.contains(myPlayer()) && muleAccount != null && muleAccount.isVisible()) {
             getWalking().webWalk(wildernessArea);
         } else {
-            Sleep.sleepUntil(() -> !(targetPlayer == null), 5000);
-        } if (wildernessArea.contains(myPlayer())&& !(targetPlayer == null)) {
-            targetPlayer.interact("Attack");
+            Sleep.sleepUntil(() -> (muleAccount != null), 5000);
+        } if (wildernessArea.contains(myPlayer())&& (muleAccount != null) && muleAccount.isVisible()) {
+            muleAccount.interact("Attack");
         }
         return 0;
     }

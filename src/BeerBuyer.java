@@ -2,6 +2,7 @@ import org.osbot.rs07.api.Bank;
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.constants.Banks;
 import org.osbot.rs07.api.model.NPC;
+import org.osbot.rs07.event.Event;
 import org.osbot.rs07.input.mouse.RectangleDestination;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
@@ -195,7 +196,7 @@ public final class BeerBuyer extends Script  {
             }
         } else {
             state = "Ready for muling";
-            new TransferItems();
+            new TransferItems(muleName);
         }
         return random (200,300);
     }
@@ -204,6 +205,10 @@ public final class BeerBuyer extends Script  {
         if (bank.withdraw(itemId, amount)) {
             Sleep.sleepUntil(() -> getInventory().contains(itemId) && getInventory().getAmount(itemId) <= amount, 1_000);
         }
+    }
+
+    private void transferItem() {
+
     }
 
 

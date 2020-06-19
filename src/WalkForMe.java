@@ -10,8 +10,8 @@ import utils.wilderness.TransferItems;
 
 import java.awt.*;
 
-@ScriptManifest(author = "Newman", name = "Mule", info = "Attempt 1", version = 0.1, logo = "")
-public final class Mule extends Script  {
+@ScriptManifest(author = "Newman", name = "WALK", info = "Attempt 1", version = 0.1, logo = "")
+public final class WalkForMe extends Script  {
 
     private long startTime;
     private Font font = new Font("Arial", Font.BOLD, 14);
@@ -31,9 +31,9 @@ public final class Mule extends Script  {
 
     @Override
     public int onLoop() throws InterruptedException {
-
-
-
+        if (!Banks.GRAND_EXCHANGE.contains(myPlayer())) {
+            getWalking().webWalk(Banks.GRAND_EXCHANGE);
+        }
         return random (200,300);
     }
 
