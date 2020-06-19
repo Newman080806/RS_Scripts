@@ -4,7 +4,9 @@ import org.osbot.rs07.api.GrandExchange;
 import org.osbot.rs07.api.model.Item;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.RS2Widget;
+import org.osbot.rs07.input.mouse.PointDestination;
 import org.osbot.rs07.script.MethodProvider;
+import org.osbot.rs07.utility.ConditionalSleep;
 import utils.Sleep;
 import utils.widget.WidgetActionFilter;
 import utils.widget.Wrapper;
@@ -25,6 +27,7 @@ public class QuickExchange extends MethodProvider {
 
     private WidgetActionFilter decreaseWidgetFilter = new WidgetActionFilter("-5%");
     private WidgetActionFilter increaseWidgetFilter = new WidgetActionFilter("+5%");
+    private  WidgetActionFilter widget_close = new WidgetActionFilter("Close");
 
     public QuickExchange(MethodProvider api) {
         exchangeContext(api.getBot());
@@ -33,6 +36,23 @@ public class QuickExchange extends MethodProvider {
     public boolean isOpen() {
         return getGrandExchange().isOpen();
     }
+
+    public  void close() {
+
+            RS2Widget cancel = getWidgets().singleFilter(getWidgets().getAll(), w -> {
+                return w != null && w.isVisible() && w.getMessage() != null && w.getMessage().equals("Grand Exchange");
+            });
+            if(cancel != null) {
+                if(getMouse().click(new PointDestination(getBot(), 484, 36))) {
+                    new ConditionalSleep(2400, 200) {
+                        @Override
+                        public boolean condition() throws InterruptedException {
+                            return !cancel.isVisible();
+                        }
+                    }.sleep();
+                }
+            }
+        }
 
     public boolean open() {
         NPC npc = getNpcs().closest(NPC_NAME);
